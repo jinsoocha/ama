@@ -1,26 +1,27 @@
-export class Question {
-  constructor(public id: number, public title: string) { }
-}
-
-// TODO: Async call to get the existing questions with answers
-const QUESTIONS = [
-  new Question(1, 'How did you learn Chinese?'),
-  new Question(2, 'What kinds of apps have you built?'),
-  new Question(3, 'Which country would you like to live in?'),
-  new Question(4, 'How is living in SF?'),
-];
-
-let questionsPromise = Promise.resolve(QUESTIONS);
-
 import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
+import { Observable } from 'rxjs/Rx';
+import { Question } from './question';
 
 @Injectable()
 export class QuestionService {
-
-  getQuestions() { return questionsPromise; }
+  
+  constructor(private http: Http) { }
+  
+  getQuestions() { 
+    return this.http.get('http://localhost:3000/getQuestions')
+      .toPromise()
+      .then(response => response.json() as Question[])
+      .catch(this.handleError);
+  }
 
   getQuestion(id: number | string) {
-    return questionsPromise
-      .then(questions => questions.find(question => question.id === +id));
+    return this.getQuestions()
+      .then(questions => questions.find(question => Number(question.Id) === +id));
+  }
+
+  private handleError(error: any) {
+    console.error('Error: ', error);
+    return Promise.reject(error.message || error);
   }
 }

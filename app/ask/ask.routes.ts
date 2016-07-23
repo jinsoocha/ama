@@ -10,7 +10,6 @@ export const askRoutes: RouterConfig = [
   {
     path: 'ask',
     component: Ask,
-    children: [
-    ]
+    children: []
   }
 ];

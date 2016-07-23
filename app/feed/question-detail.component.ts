@@ -3,13 +3,15 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
 
-import { Question, QuestionService } from './question.service';
+import { QuestionService } from './question.service';
+import { Question } from './question';
+
 
 @Component({
   template: `
   <div *ngIf="question">
     <div>
-      <h3>{{question.title}}</h3>
+      <h3>{{question.Content}}</h3>
     </div>
   </div>
   `,
@@ -17,14 +19,13 @@ import { Question, QuestionService } from './question.service';
 
 export class QuestionDetail implements OnInit, OnDestroy {
   question: any;
-  questionTitle: string;
   private sub: any;
 
   constructor(
     private service: QuestionService,
     private route: ActivatedRoute,
     private router: Router
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.sub = this.route
@@ -34,7 +35,6 @@ export class QuestionDetail implements OnInit, OnDestroy {
         this.service.getQuestion(id)
           .then(question => {
             if (question) {
-              this.questionTitle = question.title;
               this.question = question;
             } else {
               this.gotoFeed();
@@ -50,7 +50,7 @@ export class QuestionDetail implements OnInit, OnDestroy {
   }
 
   gotoFeed() {
-    let questionId = this.question ? this.question.id : null;
+    let questionId = this.question ? this.question.Id : null;
     this.router.navigate(['/feed', {id: questionId}]);
   }
 }
