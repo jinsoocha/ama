@@ -8,15 +8,15 @@ export class QuestionService {
   
   constructor(private http: Http) { }
   
-  getQuestions() { 
-    return this.http.get('http://localhost:3000/getQuestions')
+  getAnsweredQuestions() { 
+    return this.http.get('http://localhost:3000/getAnsweredQuestions')
       .toPromise()
       .then(response => response.json() as Question[])
       .catch(this.handleError);
   }
 
   getQuestion(id: number | string) {
-    return this.getQuestions()
+    return this.getAnsweredQuestions()
       .then(questions => questions.find(question => Number(question.Id) === +id));
   }
 

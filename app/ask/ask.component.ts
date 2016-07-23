@@ -11,8 +11,8 @@ import { AskService } from './ask.service';
 
 export class Ask {
   askForm: any;
-  sent: boolean;
-  message: string;
+  sent: boolean = false;
+  message: string = '';
   active: boolean = true;
   
   constructor(
@@ -24,8 +24,6 @@ export class Ask {
       'email': ['', [Validators.required]],
       'content': ['', [Validators.required, Validators.minLength(1)]]
     });
-    this.sent = false;
-    this.message = '';
   }
 
   reset() {
@@ -39,8 +37,7 @@ export class Ask {
     if (this.askForm.dirty && this.askForm.valid) {
       this.service.askQuestion(this.askForm._value)
         .then(response => {
-          if (response.Content) {
-            console.log(response);
+          if (response) {
             this.sent = true;
             this.message = 'Your question has been sent!';
             setTimeout(() => {

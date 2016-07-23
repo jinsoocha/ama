@@ -5,28 +5,89 @@ import (
   "net/http"
   "fmt"
   "encoding/json"
+  "database/sql"
+  _ "github.com/go-sql-driver/mysql"
 )
 
 type Question struct {
-  Id string
   Name string
   Email string
   Content string
 }
 
-func getQuestionsHandler(w http.ResponseWriter, r *http.Request) {
-  fmt.Println(r)
-  // TODO: need to retreive the data from DB instead of sending the static data
-  questions := []Question{
-    Question{Id: "1", Name: "Jinsoo", Email: "jan@newmarch.name", Content: "hjjdagjadgh adjhlajghejltjh"},
-    Question{Id: "2", Name: "adge", Email: "j.newmarch@boxhill.edu.au", Content: "aegjlahkjeg"},
-  }
+type Reply struct {
+  Id int
+  Answer string
+}
 
-  js, err := json.Marshal(questions)
+type Answer struct {
+  Id int
+  Name string
+  Email string
+  Content string
+  Answer sql.NullString
+  Created string
+  Updated sql.NullString
+}
+
+func checkErr(err error) {
   if err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
+      panic(err)
   }
+}
+
+// func sendErr(err  error, w http.ResponseWriter) {
+//   if err != nil {
+//     http.Error(w, err.Error(), http.StatusInternalServerError)
+//     return
+//   }
+// }
+
+func getQuestions(w http.ResponseWriter, r *http.Request) {
+  fmt.Println(r)
+
+  db, err := sql.Open("mysql", "root:1111@/ama")
+  checkErr(err)
+
+  rows, err := db.Query("SELECT * FROM questions ORDER BY created desc")
+  checkErr(err)
+  
+  answers := []Answer{}
+  for rows.Next() {
+    a := Answer{}
+    err = rows.Scan(&a.Id, &a.Name, &a.Email, &a.Content, &a.Answer, &a.Created, &a.Updated)
+    checkErr(err)
+    answers = append(answers, a)
+  }
+  
+  js, err := json.Marshal(answers)
+  checkErr(err)
+
+  w.Header().Set("Access-Control-Allow-Origin", "*")
+  w.Header().Set("Content-Type", "application/json")
+  w.WriteHeader(200)
+  w.Write(js)
+}
+
+func getAnsweredQuestions(w http.ResponseWriter, r *http.Request) {
+  fmt.Println(r)
+  
+  db, err := sql.Open("mysql", "root:1111@/ama")
+  checkErr(err)
+  
+  rows, err := db.Query("SELECT * FROM questions WHERE answer IS NOT NULL ORDER BY created desc")
+  checkErr(err)
+  
+  answers := []Answer{}
+  for rows.Next() {
+    a := Answer{}
+    err = rows.Scan(&a.Id, &a.Name, &a.Email, &a.Content, &a.Answer, &a.Created, &a.Updated)
+    checkErr(err)
+    answers = append(answers, a)
+  }
+  
+  js, err := json.Marshal(answers)
+  checkErr(err)
 
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Content-Type", "application/json")
@@ -42,12 +103,54 @@ func askQuestion (w http.ResponseWriter, r *http.Request) {
     decoder := json.NewDecoder(r.Body)
     var q Question   
     err := decoder.Decode(&q)
-    // TODO: need to change q.Id and put in in DB
-    js, err := json.Marshal(q)
-    if err != nil {
-      http.Error(w, err.Error(), http.StatusInternalServerError)
-      return
-    }
+    checkErr(err)
+    
+    db, err := sql.Open("mysql", "root:1111@/ama")
+    checkErr(err)
+
+    stmt, err := db.Prepare("INSERT questions SET name=?,email=?,content=?")
+    checkErr(err)
+    
+    res, err := stmt.Exec(q.Name, q.Email, q.Content)
+    checkErr(err)
+    
+    id, err := res.LastInsertId()
+    checkErr(err)
+    
+    js, err := json.Marshal(id)
+    checkErr(err)
+    
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(201)
+    w.Write(js)
+  }
+}
+
+func answerQuestion (w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Access-Control-Allow-Origin", "*")
+  w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+  
+  if r.Method == "POST" {
+    decoder := json.NewDecoder(r.Body)
+    var rp Reply   
+    err := decoder.Decode(&rp)
+    checkErr(err)
+    
+    db, err := sql.Open("mysql", "root:1111@/ama")
+    checkErr(err)
+
+    stmt, err := db.Prepare("update questions set answer=? where id=?")
+    checkErr(err)
+
+    res, err := stmt.Exec(rp.Answer, rp.Id)
+    checkErr(err)
+
+    affect, err := res.RowsAffected()
+    checkErr(err)
+
+    js, err := json.Marshal(affect)
+    checkErr(err)
+    
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(201)
     w.Write(js)
@@ -58,12 +161,14 @@ func main() {
   mux := http.NewServeMux()
 
   getIndex := http.FileServer(http.Dir("../../dist"))
-  getQuestions := http.HandlerFunc(getQuestionsHandler)
   
   mux.Handle("/", getIndex)
-  mux.Handle("/getQuestions", getQuestions)
+  mux.HandleFunc("/getQuestions", getQuestions)
+  mux.HandleFunc("/getAnsweredQuestions", getAnsweredQuestions)
   mux.HandleFunc("/askQuestion", askQuestion)
+  mux.HandleFunc("/answerQuestion", answerQuestion)
 
   log.Println("Listening...")
   http.ListenAndServe(":3000", mux)
 }
+

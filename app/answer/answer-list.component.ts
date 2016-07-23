@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router }       from '@angular/router';
 
-import { QuestionService } from './question.service';
-import { Question } from './question';
+import { AnswerService } from './answer.service';
+import { Question } from '../feed/question';
+import { Authentication } from './authentication'
 
 @Component({
   template: `
+    <a (click)="logout()" href="#">Logout</a>
     <ul class="questions">
       <li *ngFor="let question of questions"
         [class.selected]="isSelected(question)"
@@ -16,24 +18,26 @@ import { Question } from './question';
   `,
 })
 
-export class QuestionList implements OnInit, OnDestroy {
-  questions: Question[];
+export class AnswerList implements OnInit, OnDestroy {
+  questions: any[];
   private selectedId: number;
   private sub: any;
 
   constructor(
-    private service: QuestionService,
+    private _service: Authentication,
+    private service: AnswerService,
     private route: ActivatedRoute,
     private router: Router) { }
 
   isSelected(question: Question) { return question.Id === this.selectedId; }
 
   ngOnInit() {
+    this._service.checkCredentials();
     this.sub = this.route
       .params
       .subscribe(params => {
         this.selectedId = +params['id'];
-        this.service.getAnsweredQuestions()
+        this.service.getQuestions()
           .then(questions => this.questions = questions);
       });
   }
@@ -45,6 +49,10 @@ export class QuestionList implements OnInit, OnDestroy {
   }
 
   onSelect(question: Question) {
-    this.router.navigate(['/feed', question.Id]);
+    this.router.navigate(['/answer/question', question.Id]);
+  }
+
+  logout() {
+    this._service.logout();
   }
 }

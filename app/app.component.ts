@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { ROUTER_DIRECTIVES } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ROUTER_DIRECTIVES, Router } from '@angular/router';
 
 @Component({
   selector: 'my-app',
@@ -9,11 +9,11 @@ import { ROUTER_DIRECTIVES } from '@angular/router';
       <a routerLink="/feed" routerLinkActive="active"
          [routerLinkActiveOptions]="{ exact: true }">Feed</a>
       <a routerLink="/ask" routerLinkActive="active">Ask a question</a>
+      <a routerLink="/answer" routerLinkActive="active">Admin</a>
     </nav>
     <router-outlet></router-outlet>
   `,
   providers:  [],
   directives: [ROUTER_DIRECTIVES]
 })
-export class AppComponent {
-}
+export class AppComponent {}
