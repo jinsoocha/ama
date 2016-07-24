@@ -8,7 +8,7 @@ export class AnswerService {
   constructor(private http: Http) { }
   
   getQuestions() { 
-    return this.http.get('http://localhost:3000/getQuestions')
+    return this.http.get('http://159.203.241.78:3000/getQuestions')
       .toPromise()
       .then(response => response.json() as any[])
       .catch(this.handleError);
@@ -25,7 +25,7 @@ export class AnswerService {
       'Content-Type': 'application/json',
      });
     let options = new RequestOptions({ headers: headers });
-    return this.http.post('http://localhost:3000/answerQuestion', body, options)
+    return this.http.post('http://159.203.241.78:3000/answerQuestion', body, options)
                .toPromise()
                .then(this.getResponse)
                .catch(this.handleError);

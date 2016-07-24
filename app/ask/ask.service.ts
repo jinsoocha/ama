@@ -14,7 +14,7 @@ export class AskService {
       'Content-Type': 'application/json',
      });
     let options = new RequestOptions({ headers: headers });
-    return this.http.post('http://localhost:3000/askQuestion', body, options)
+    return this.http.post('http://159.203.241.78:3000/askQuestion', body, options)
                .toPromise()
                .then(this.getResponse)
                .catch(this.handleError);
