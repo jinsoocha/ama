@@ -15,7 +15,7 @@ You will see your introduction and questions that you have answered already.
 ## Ask Page ##
 People can submit questions here.
 
-![image](https://cloud.githubusercontent.com/assets/17713849/17085556/2ec1aa50-5190-11e6-8bf4-5f11a2e1cdf4.png)
+![image](https://cloud.githubusercontent.com/assets/17713849/17085699/4de98882-5193-11e6-9954-130e0d0dda81.png)
 
 ## Answer Page ##
 As an owner of the page, you can see all the questions that have been submitted to you after login.
