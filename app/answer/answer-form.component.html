@@ -1,9 +1,12 @@
 <div *ngIf="question">
-  <form *ngIf="active" [formGroup]="answerForm" (submit)="send()">
-    <label for="answer">{{question.Content}}</label>
+  <form class="ui form" *ngIf="active" [formGroup]="answerForm" (submit)="send()">
+    <div class="field">
+    <label for="answer"><strong>Question:</strong> {{question.Content}}</label>
     <textarea formControlName="answer" id="answer" placeholder="required"></textarea>
+    </div>
     <info [control]="answerForm.controls.answer"></info>
-    <button type="submit" [disabled]="!answerForm.valid">Submit</button>
+    
+    <button class="ui primary button" type="submit">Submit</button>
   </form>
-  <div *ngIf="sent">{{message}}</div>
+  <div class="ui positive message" *ngIf="sent">{{message}}</div>
 </div>

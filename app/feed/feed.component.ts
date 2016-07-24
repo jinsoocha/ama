@@ -5,7 +5,6 @@ import { QuestionService } from './question.service';
 
 @Component({
   template:  `
-    <h2>Feed</h2>
     <router-outlet></router-outlet>
   `,
   directives: [ROUTER_DIRECTIVES],

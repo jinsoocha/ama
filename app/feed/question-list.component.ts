@@ -6,13 +6,18 @@ import { Question } from './question';
 
 @Component({
   template: `
-    <ul class="questions">
-      <li *ngFor="let question of questions"
+    <sm-card class="ui centered cards">
+      <sm-card class="card"
+        *ngFor="let question of questions"
         [class.selected]="isSelected(question)"
         (click)="onSelect(question)">
-        {{question.Content}}
-      </li>
-    </ul>
+        <sm-card class="content">
+          <sm-card class="header">{{question.Name}}</sm-card>
+          <sm-card class="meta">created at {{question.Updated}}</sm-card>
+          <div class="description">{{question.Content}}</div>
+        </sm-card>
+      </sm-card>
+    </sm-card>
   `,
 })
 

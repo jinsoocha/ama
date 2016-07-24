@@ -9,11 +9,15 @@ import { Question } from './question';
 
 @Component({
   template: `
-  <div *ngIf="question">
-    <div>
-      <h3>{{question.Content}}</h3>
-    </div>
-  </div>
+  <sm-item class="ui items" *ngIf="question">
+    <sm-item class="item">
+      <sm-item class="content">
+        <div class="header"><strong>Question:</strong> {{question.Content}}</div>
+        <div class="description"><strong>Answer:</strong> {{question.Answer}}</div>
+        <div class="meta">{{question.Updated}}</div>
+      </sm-item>
+    </sm-item>
+  </sm-item>
   `,
 })
 

@@ -9,6 +9,8 @@ import (
   _ "github.com/go-sql-driver/mysql"
 )
 
+var db *sql.DB
+
 type Question struct {
   Name string
   Email string
@@ -20,7 +22,7 @@ type Reply struct {
   Answer string
 }
 
-type Answer struct {
+type UnansweredQuestion struct {
   Id int
   Name string
   Email string
@@ -28,6 +30,16 @@ type Answer struct {
   Answer sql.NullString
   Created string
   Updated sql.NullString
+}
+
+type AnsweredQuestion struct {
+  Id int
+  Name string
+  Email string
+  Content string
+  Answer string
+  Created string
+  Updated string
 }
 
 func checkErr(err error) {
@@ -46,15 +58,12 @@ func checkErr(err error) {
 func getQuestions(w http.ResponseWriter, r *http.Request) {
   fmt.Println(r)
 
-  db, err := sql.Open("mysql", "root:1111@/ama")
-  checkErr(err)
-
   rows, err := db.Query("SELECT * FROM questions ORDER BY created desc")
   checkErr(err)
   
-  answers := []Answer{}
+  answers := []UnansweredQuestion{}
   for rows.Next() {
-    a := Answer{}
+    a := UnansweredQuestion{}
     err = rows.Scan(&a.Id, &a.Name, &a.Email, &a.Content, &a.Answer, &a.Created, &a.Updated)
     checkErr(err)
     answers = append(answers, a)
@@ -72,15 +81,12 @@ func getQuestions(w http.ResponseWriter, r *http.Request) {
 func getAnsweredQuestions(w http.ResponseWriter, r *http.Request) {
   fmt.Println(r)
   
-  db, err := sql.Open("mysql", "root:1111@/ama")
-  checkErr(err)
-  
   rows, err := db.Query("SELECT * FROM questions WHERE answer IS NOT NULL ORDER BY created desc")
   checkErr(err)
   
-  answers := []Answer{}
+  answers := []AnsweredQuestion{}
   for rows.Next() {
-    a := Answer{}
+    a := AnsweredQuestion{}
     err = rows.Scan(&a.Id, &a.Name, &a.Email, &a.Content, &a.Answer, &a.Created, &a.Updated)
     checkErr(err)
     answers = append(answers, a)
@@ -103,9 +109,6 @@ func askQuestion (w http.ResponseWriter, r *http.Request) {
     decoder := json.NewDecoder(r.Body)
     var q Question   
     err := decoder.Decode(&q)
-    checkErr(err)
-    
-    db, err := sql.Open("mysql", "root:1111@/ama")
     checkErr(err)
 
     stmt, err := db.Prepare("INSERT questions SET name=?,email=?,content=?")
@@ -135,9 +138,6 @@ func answerQuestion (w http.ResponseWriter, r *http.Request) {
     var rp Reply   
     err := decoder.Decode(&rp)
     checkErr(err)
-    
-    db, err := sql.Open("mysql", "root:1111@/ama")
-    checkErr(err)
 
     stmt, err := db.Prepare("update questions set answer=? where id=?")
     checkErr(err)
@@ -158,6 +158,11 @@ func answerQuestion (w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+  var err error
+  db, err = sql.Open("mysql", "root:1111@/ama")
+  checkErr(err)
+  defer db.Close()
+
   mux := http.NewServeMux()
 
   getIndex := http.FileServer(http.Dir("../../dist"))

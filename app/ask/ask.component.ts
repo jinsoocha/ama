@@ -50,6 +50,9 @@ export class Ask {
           this.sent = true;
           this.message = 'There has been an error. Please try later.'
         })
+    } else {
+      this.sent = true;
+      this.message = 'Please enter valid message.'
     }
   }
 }

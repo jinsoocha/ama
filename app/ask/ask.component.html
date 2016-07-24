@@ -1,18 +1,24 @@
 <div>
-  <form *ngIf="active" [formGroup]="askForm" (submit)="send()">
-    <label for="name">Name</label>
-    <input formControlName="name" id="name" placeholder="required" />
+  <form class="ui form" *ngIf="active" [formGroup]="askForm" (submit)="send()">
+    <div class="field">
+      <label for="name">Name</label>
+      <input formControlName="name" id="name" placeholder="required" />
+    </div>
     <info [control]="askForm.controls.name"></info>
-
-    <label for="email">Email</label>
-    <input formControlName="email" id="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" placeholder="(optional) Would you like to recieve an answer through your email?" />
+    
+    <div class="field">
+      <label for="email">Email</label>
+      <input formControlName="email" id="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" placeholder="required" />
+    </div>
     <info [control]="askForm.controls.email"></info>
-
-    <label for="content">What is your question?</label>
-    <textarea formControlName="content" id="content" placeholder="required"></textarea>
+    
+    <div class="field">
+      <label for="content">What is your question?</label>
+      <textarea formControlName="content" id="content" placeholder="required"></textarea>
+    </div>
     <info [control]="askForm.controls.content"></info>
 
-    <button type="submit" [disabled]="!askForm.valid">Submit</button>
+    <button class="ui primary button" type="submit">Submit</button>
   </form>
-  <div *ngIf="sent">{{message}}</div>
+  <div class="ui positive message" *ngIf="sent">{{message}}</div>
 </div>

@@ -6,7 +6,6 @@ import { Authentication } from './authentication';
 
 @Component({
   template:  `
-    <h2>Answer</h2>
     <router-outlet></router-outlet>
   `,
   directives: [ROUTER_DIRECTIVES],

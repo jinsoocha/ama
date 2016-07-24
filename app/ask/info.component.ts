@@ -3,7 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'info',
-  template: `<div *ngIf="errorMessage !== null">{{errorMessage}}</div>`
+  template: `<div class="ui negative message" *ngIf="errorMessage !== null">{{errorMessage}}</div>`
 })
 export class Info {
   @Input() control: FormControl;

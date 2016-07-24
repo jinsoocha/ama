@@ -87,6 +87,9 @@ export class AnswerForm implements OnInit, OnDestroy {
           this.sent = true;
           this.message = 'There has been an error. Please try later.'
         })
+    } else {
+      this.sent = true;
+      this.message = 'Please enter vaild message.'
     }
   }
 }
