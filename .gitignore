@@ -3,8 +3,6 @@
 typings
 app/**/*.js
 app/**/*.map
-node_modules
-dist
 
 ### Go ###
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
