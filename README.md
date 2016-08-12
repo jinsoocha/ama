@@ -1,4 +1,4 @@
-# ama
+# Visit http://159.203.241.78:3000
 
 # Answer For The World #
 Ask For The World is the project built with Angular 2, Golang, MySQL and Semantic UI. 
